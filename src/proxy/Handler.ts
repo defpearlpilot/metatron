@@ -8,8 +8,10 @@ export class Handler<T extends object> implements ProxyHandler<T> {
   }
 
   // construct(target: T, argArray: any, newTarget?: any): object {
+  //   TODO: implement this, maybe
   //   return {};
   // }
+
 
   get(target: T, property: PropertyKey, receiver: any) {
     this.checkProperty(property as string);
@@ -34,6 +36,7 @@ export class Handler<T extends object> implements ProxyHandler<T> {
     }
   }
 
+
   private validateRequired(property: string, valueProvider:() => any) {
     const value = valueProvider();
 
@@ -44,10 +47,13 @@ export class Handler<T extends object> implements ProxyHandler<T> {
     return value;
   }
 
+
   private validateMutable(property: string) {
-    if (!this.meta.isMutable(property)) {
-      throw new Error(`Proxy attempted to set an immutable property ${property}`);
+    if (this.meta.isMutable(property)) {
+      return;
     }
+
+    throw new Error(`Proxy attempted to set an immutable property ${property}`);
   }
 
 }

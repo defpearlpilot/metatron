@@ -6,6 +6,7 @@ import {Mutability, Requirement} from '../meta/MetaMember';
 
 export interface Test {
   required: string;
+  not_writable: string;
   writable: string;
   writable_required: string;
 }
@@ -13,6 +14,7 @@ export interface Test {
 const proxyFields = [
   new Primitive('required', Requirement.REQUIRED),
   new Primitive('not_required'),
+  new Primitive('not_writable', Requirement.REQUIRED, Mutability.IMMUTABLE),
   new Primitive('writable', Requirement.NOT_REQUIRED, Mutability.MUTABLE),
   new Primitive('writable_required', Requirement.REQUIRED, Mutability.MUTABLE),
 ];

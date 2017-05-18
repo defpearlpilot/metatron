@@ -1,0 +1,68 @@
+{
+  "name": "metatron",
+  "version": "0.1.0",
+  "description": "projects",
+  "license": "MIT",
+  "repository": "",
+  "author": "",
+  "keywords": [
+    ""
+  ],
+  "files": [
+    "lib"
+  ],
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "clean": "rimraf lib",
+    "lint": "tslint --force --format verbose \"src/**/*.ts\"",
+    "build": "npm run clean && npm run lint && tsc --version && tsc --pretty",
+    "test:unit": "npm run build && ROOT=`pwd` && NODE_ENV=unit-test NODE_CONFIG_DIR=$ROOT/lib/config mocha --compilers ts:ts-node/register --recursive 'test/**/*-spec.ts'",
+    "test:int": "npm run build && ROOT=`pwd` && NODE_ENV=integration-test NODE_CONFIG_DIR=$ROOT/lib/config mocha --timeout=60000 --compilers ts:ts-node/register --recursive 'test-int/**/*-spec.ts'",
+    "test": "npm run test:unit && npm run test:int",
+    "coverage": "nyc --reporter=text --reporter=html mocha --compilers ts:ts-node/register",
+    "watch": "npm run build -- --watch",
+    "watch:unit": "npm run test:unit -- --watch",
+    "watch:int": "npm run test:int -- --watch",
+    "watch:start": "ROOT=`pwd` && NODE_ENV=development NODE_CONFIG_DIR=$ROOT/lib/config nodemon --delay 2.5 --watch lib lib/rest/index.js"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.64",
+    "lodash": "^4.17.4",
+    "log4js": "^1.1.1",
+    "uuid": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.16.3",
+    "@types/chai": "^3.0.0",
+    "@types/chai-as-promised": "0.0.30",
+    "@types/log4js": "0.0.32",
+    "@types/mocha": "^2.0.0",
+    "chai": "^3.0.0",
+    "chai-as-promised": "^6.0.0",
+    "mocha": "^3.0.0",
+    "rimraf": "^2.0.0",
+    "tslint": "^4.0.0",
+    "typescript": "^2.3.0",
+    "ts-node": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "nyc": {
+    "include": [
+      "src/*.ts"
+    ],
+    "exclude": [
+      "lib"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [],
+    "all": true
+  }
+}

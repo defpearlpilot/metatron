@@ -1,8 +1,9 @@
-import {MetaMember, Mutability, Requirement} from './MetaMember';
+import {Invocable, MetaMember, Mutability, Requirement} from './MetaMember';
 
 export class BaseMetaMember implements MetaMember {
 
   constructor(private _name: string,
+              private _canInvoke: Invocable = Invocable.CANNOT_INVOKE,
               private _isRequired: Requirement = Requirement.NOT_REQUIRED,
               private _isMutable: Mutability = Mutability.MUTABLE) {
   }
@@ -17,5 +18,9 @@ export class BaseMetaMember implements MetaMember {
 
   get isMutable() {
     return this._isMutable == Mutability.MUTABLE;
+  }
+
+  get canInvoke() {
+    return this._canInvoke == Invocable.CAN_INVOKE;
   }
 }

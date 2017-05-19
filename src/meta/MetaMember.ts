@@ -10,7 +10,14 @@ export enum Mutability {
   MUTABLE
 }
 
+export enum Invocable {
+  CAN_INVOKE,
+  CANNOT_INVOKE
+}
+
+
 export interface MetaMember extends Named {
   isRequired: boolean;
   isMutable: boolean;
+  canInvoke: boolean;
 }

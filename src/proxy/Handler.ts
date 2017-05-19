@@ -1,8 +1,12 @@
 import {isNil} from 'lodash';
 import {ProxyMetaData} from '../meta/ProxyMetaData';
+import {AbstractMethod} from '../meta/AbstractMethod';
 
 
 export class Handler<T extends object> implements ProxyHandler<T> {
+
+  private _changes: Map<string, any> = new Map<string, any>();
+
   constructor(private meta: ProxyMetaData) {
 
   }
@@ -15,7 +19,7 @@ export class Handler<T extends object> implements ProxyHandler<T> {
 
   get(target: T, property: PropertyKey, receiver: any) {
     this.checkProperty(property as string);
-    return this.validateRequired(property as string, () => Reflect.get(target, property));
+    return this.validateRequired(property as string, () => this.provideValue(target, property as string));
   }
 
 
@@ -37,6 +41,18 @@ export class Handler<T extends object> implements ProxyHandler<T> {
   }
 
 
+  private provideValue(target: T, property: string) {
+    if (!this.meta.canInvoke(property)) {
+      return Reflect.get(target, property);
+    }
+
+    const methodDescriptor = this.meta.getMethod(property);
+    const parameterMap = this.gatherParameters(target, methodDescriptor);
+
+    return methodDescriptor.invoke(parameterMap);
+  }
+
+
   private validateRequired(property: string, valueProvider:() => any) {
     const value = valueProvider();
 
@@ -55,5 +71,16 @@ export class Handler<T extends object> implements ProxyHandler<T> {
 
     throw new Error(`Proxy attempted to set an immutable property ${property}`);
   }
+
+
+  private gatherParameters(target: T, methodDescriptor: AbstractMethod) {
+    return methodDescriptor.parameterNames().reduce((acc, property) => {
+      const value = this.validateRequired(property, () => Reflect.get(target, property));
+      acc.set(property as string, value);
+
+      return acc;
+    }, new Map<string, any>())
+  }
+
 
 }

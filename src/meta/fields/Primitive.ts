@@ -1,7 +1,8 @@
-import {BaseMetaMember} from './BaseMetaMember';
-import {Invocable, Mutability, Requirement} from './MetaMember';
+import {BaseMetaMember} from '../BaseMetaMember';
+import {Invocable, Mutability, Requirement} from '../MetaMember';
 
-export class Proxied extends BaseMetaMember {
+export class Primitive extends BaseMetaMember {
+
   constructor(_name: string,
               _isRequired?: Requirement,
               _isMutable?: Mutability) {

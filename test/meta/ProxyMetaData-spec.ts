@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {Primitive} from '../../src/meta/Primitive';
+import {Primitive} from '../../src/meta/fields/Primitive';
 import {ProxyMetaData} from '../../src/meta/ProxyMetaData';
 
 describe('proxy meta data test suite', function () {

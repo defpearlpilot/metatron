@@ -3,9 +3,10 @@ import {Primitive} from '../meta/fields/Primitive';
 import {ProxyMetaData} from '../meta/ProxyMetaData';
 import {Mutability, Requirement} from '../meta/MetaMember';
 import {AttributeMethod} from '../meta/methods/AttributeMethod';
+import {Proxied} from './Proxied';
 
 
-export interface Test {
+export interface Test extends Proxied {
   required: string;
   not_writable: string;
   writable?: string;

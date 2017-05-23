@@ -2,6 +2,7 @@ import {MetaMember} from './MetaMember';
 import {NameCachingStrategy} from '../cache/NameCachingStrategy';
 import {AbstractMethod} from './AbstractMethod';
 import {Primitive} from './fields/Primitive';
+import {BuiltInMethod} from './methods/BuiltInMethod';
 
 const cacheByName = new NameCachingStrategy();
 
@@ -9,17 +10,24 @@ class Cache {
   nameMap: Map<string, MetaMember> = new Map<string, MetaMember>();
 }
 
+const BUILT_INS = [
+  new BuiltInMethod("commit"),
+  new BuiltInMethod("update"),
+  new BuiltInMethod("subscribe")
+];
+
 export class ProxyMetaData {
 
   private nameMap: Map<string, MetaMember>;
 
   constructor(meta: MetaMember[]) {
-    const reducer = (acc: Cache, member: MetaMember): Cache => {
+    const cacheMetaMembers = (acc: Cache, member: MetaMember): Cache => {
       cacheByName.put(acc.nameMap, member);
       return acc;
     };
 
-    const cache = meta.reduce(reducer, new Cache());
+    const initial = meta.reduce(cacheMetaMembers, new Cache());
+    const cache = BUILT_INS.reduce(cacheMetaMembers, initial);
     this.nameMap = cache.nameMap;
   }
 

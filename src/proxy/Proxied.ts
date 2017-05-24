@@ -5,6 +5,8 @@ import {Notification} from '../events/Notification';
 export interface Proxied {
   commit(): boolean;
 
+  rollback(): boolean;
+
   destroy(): boolean;
 
   subscribe(onNext: (update: Notification) => void,

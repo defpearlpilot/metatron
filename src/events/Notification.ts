@@ -1,6 +1,7 @@
 export enum NotificationType {
   CREATED,
   UPDATED,
+  ROLLBACK,
   REVERTED,
   COMMITTED,
   DELETED
@@ -29,11 +30,11 @@ export class AbstractNotification implements Notification {
     return this._property;
   }
 
-  get value(): string {
+  get value(): any {
     return this._value;
   }
 
-  get last(): string {
+  get last(): any {
     return this._last;
   }
 }
@@ -60,7 +61,14 @@ export class RevertedNotification extends AbstractNotification {
 }
 
 
-export class CommittedNofiication extends AbstractNotification {
+export class RollbackNotification extends AbstractNotification {
+  constructor(value: any) {
+    super(NotificationType.ROLLBACK, "__item__", value);
+  }
+}
+
+
+export class CommittedNotification extends AbstractNotification {
   constructor(value: any) {
     super(NotificationType.COMMITTED, "__item__", value);
   }

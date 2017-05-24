@@ -1,7 +1,10 @@
 import {expect} from 'chai';
 
 import {createProxy, Test} from '../../src/proxy/TestProxy';
-import {Notification, RevertedNotification, UpdatedNotification} from '../../src/events/Notification';
+import {
+  CommittedNotification, Notification, RevertedNotification, RollbackNotification,
+  UpdatedNotification
+} from '../../src/events/Notification';
 
 function createValidProxy(): Test {
   const sourceItem: Test = {
@@ -10,6 +13,7 @@ function createValidProxy(): Test {
     writable: 'writable',
     writable_required: 'required',
     commit: () => true,
+    rollback: () => true,
     destroy: () => true,
     subscribe: (onNext,
                 onError: (error: any) => void,
@@ -68,7 +72,7 @@ describe('notification suite', function testNotifications() {
                            expect(update.value).to.be.equal('update');
                            done();
                          },
-                         (error: any) => {
+                         () => {
                          },
                          () => {
                          });
@@ -89,12 +93,58 @@ describe('notification suite', function testNotifications() {
                            expect(revert.last).to.be.equal('update');
                            done();
                          },
-                         (error: any) => {
+                         () => {
                          },
                          () => {
                          });
 
     validProxy.required = 'value';
+  });
+
+
+  it('tests a commit', function testCommit(done) {
+    const validProxy = createValidProxy();
+
+    validProxy.required = 'update';
+
+    validProxy.subscribe((notification: Notification) => {
+                           expect(notification instanceof CommittedNotification).to.be.true;
+
+                           const committed = notification as CommittedNotification;
+                           const item = committed.value as Test;
+                           expect(item.required).to.be.equal('update');
+                           expect(validProxy.required).to.be.equal('update');
+                           done();
+                         },
+                         () => {
+                         },
+                         () => {
+                         });
+
+    validProxy.commit();
+  });
+
+
+  it('tests a rollback', function testRevert(done) {
+    const validProxy = createValidProxy();
+
+    validProxy.required = 'revert';
+
+    validProxy.subscribe((notification: Notification) => {
+                           expect(notification instanceof RollbackNotification).to.be.true;
+
+                           const rollback = notification as RollbackNotification;
+                           const item = rollback.value as Test;
+                           expect(item.required).to.be.equal('value');
+                           expect(validProxy.required).to.be.equal('value');
+                           done();
+                         },
+                         () => {
+                         },
+                         () => {
+                         });
+
+    validProxy.rollback();
   });
 
 });

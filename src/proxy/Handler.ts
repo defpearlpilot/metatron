@@ -5,7 +5,10 @@ import {ProxyMetaData} from '../meta/ProxyMetaData';
 import {AbstractMethod} from '../meta/AbstractMethod';
 import {Proxied} from './Proxied';
 
-import {Notification, RevertedNotification, UpdatedNotification} from '../events/Notification';
+import {
+  CommittedNotification, Notification, RevertedNotification, RollbackNotification,
+  UpdatedNotification
+} from '../events/Notification';
 import {BuiltInMethod} from '../meta/methods/BuiltInMethod';
 
 
@@ -27,7 +30,8 @@ export class Handler<T extends Proxied> implements ProxyHandler<T> {
   //   return {};
   // }
 
-  subscribe(onNext: (update: Notification) => void,
+  subscribe(target: T,
+            onNext: (update: Notification) => void,
             onError: (error: any) => void,
             onComplete: () => void) : Rx.Subscription {
     return this._subject.subscribe(onNext, onError, onComplete);
@@ -68,6 +72,25 @@ export class Handler<T extends Proxied> implements ProxyHandler<T> {
   }
 
 
+  commit(target: T) {
+    this._changes.forEach((value: any, propName: string) => {
+      const changed = this._changes.get(propName);
+      Reflect.set(target, propName, changed);
+    });
+
+    this._changes.clear();
+    this._original.clear();
+    this.publishCommit(target);
+  }
+
+
+  rollback(target: T) {
+    this._changes.clear();
+    this._original.clear();
+    this.publishRollback(target);
+  }
+
+
   private checkProperty(property: string): void {
     if (!this._meta.containsProperty(property as string)) {
       throw new Error(`Proxy does not expect property: ${property}`);
@@ -79,7 +102,7 @@ export class Handler<T extends Proxied> implements ProxyHandler<T> {
     const _invoke = () => {
       const methodDescriptor = this._meta.getMethod(property);
       if (methodDescriptor instanceof BuiltInMethod) {
-        return Reflect.get(this, methodDescriptor.name).bind(this);
+        return Reflect.get(this, methodDescriptor.name).bind(this, target);
       }
 
       const invocation = methodDescriptor as AbstractMethod;
@@ -185,6 +208,18 @@ export class Handler<T extends Proxied> implements ProxyHandler<T> {
    */
   private areEqual(some?: any, other?: any) {
     return some === other;
+  }
+
+
+  private publishCommit(value: any) {
+    const committed = new CommittedNotification(value);
+    this._subject.next(committed);
+  }
+
+
+  private publishRollback(value: any) {
+    const rolledBack = new RollbackNotification(value);
+    this._subject.next(rolledBack);
   }
 
 

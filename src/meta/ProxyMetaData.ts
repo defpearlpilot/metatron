@@ -12,6 +12,7 @@ class Cache {
 
 const BUILT_INS = [
   new BuiltInMethod("commit"),
+  new BuiltInMethod("rollback"),
   new BuiltInMethod("update"),
   new BuiltInMethod("subscribe")
 ];

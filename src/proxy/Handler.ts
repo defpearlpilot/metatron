@@ -6,18 +6,21 @@ import {AbstractMethod} from '../meta/AbstractMethod';
 import {Proxied} from './Proxied';
 
 import {
-  CommittedNotification, Notification, RevertedNotification, RollbackNotification,
+  CommittedNotification,
+  Notification,
+  RevertedNotification,
+  RollbackNotification,
   UpdatedNotification
 } from '../events/Notification';
+
 import {BuiltInMethod} from '../meta/methods/BuiltInMethod';
 
 
 export class Handler<T extends Proxied> implements ProxyHandler<T> {
-
   private _original: Map<string, any> = new Map<string, any>();
   private _changes: Map<string, any> = new Map<string, any>();
   private _subject: Rx.Subject<Notification>;
-  private _subscription: Rx.Subscription;
+  private _subscriptions: Rx.Subscription[];
 
 
   constructor(private _meta: ProxyMetaData) {
@@ -46,9 +49,10 @@ export class Handler<T extends Proxied> implements ProxyHandler<T> {
    * @param receiver
    * @returns {any}
    */
-  get(target: T, property: PropertyKey, receiver: any) {
-    this.checkProperty(property as string);
-    return this.validateRequired(property as string, () => this.provideValue(target, property as string));
+  get(target: T, property: PropertyKey, receiver: any): any {
+    const propName = property as string;
+    this.checkProperty(propName);
+    return this.validateRequired(propName, () => this.provideValue(target, propName));
   }
 
 
@@ -62,9 +66,11 @@ export class Handler<T extends Proxied> implements ProxyHandler<T> {
    * @returns {boolean}
    */
   set(target: T, property: PropertyKey, value: any, receiver: any): boolean {
-    this.checkProperty(property as string);
-    this.validateMutable(property as string);
-    this.validateRequired(property as string, () => value);
+    const propName = property as string;
+    this.checkProperty(propName);
+    this.validateMutable(propName);
+    this.validateProxyValue(propName, value);
+    this.validateRequired(propName, () => value);
 
     this.setValue(target, property, value);
 
@@ -72,6 +78,11 @@ export class Handler<T extends Proxied> implements ProxyHandler<T> {
   }
 
 
+  /**
+   * built-in method for committing changes to the target
+   *
+   * @param target
+   */
   commit(target: T) {
     this._changes.forEach((value: any, propName: string) => {
       const changed = this._changes.get(propName);
@@ -84,12 +95,21 @@ export class Handler<T extends Proxied> implements ProxyHandler<T> {
   }
 
 
+  /**
+   * built-in method for rolling back temporary changes captured in the proxy
+   *
+   * @param target
+   */
   rollback(target: T) {
     this._changes.clear();
     this._original.clear();
     this.publishRollback(target);
   }
 
+
+  isProxy(target: T) {
+    return true;
+  }
 
   private checkProperty(property: string): void {
     if (!this._meta.containsProperty(property as string)) {
@@ -190,6 +210,21 @@ export class Handler<T extends Proxied> implements ProxyHandler<T> {
     }
 
     throw new Error(`Proxy attempted to set an immutable property ${property}`);
+  }
+
+
+  private validateProxyValue(property: string, value: any) {
+    const isProxy = Reflect.get(value, 'isProxy');
+    if (this._meta.isProxy(property)) {
+      if (!isProxy) {
+        throw new Error(`Proxy attempted to set an property ${property} that expected a proxy to a bare value`);
+      }
+    } else {
+      if (isProxy) {
+        throw new Error(`Proxy attempted to set an property ${property} that expected a bare value to a proxy`);
+      }
+    }
+
   }
 
 

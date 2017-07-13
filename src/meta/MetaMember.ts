@@ -15,9 +15,16 @@ export enum Invocable {
   CANNOT_INVOKE
 }
 
+export enum ProxyType {
+  NOT_PROXY,
+  PROXY,
+  PROXY_LIST
+}
+
 
 export interface MetaMember extends Named {
   isRequired: boolean;
   isMutable: boolean;
+  isProxy: boolean;
   canInvoke: boolean;
 }

@@ -24,8 +24,8 @@
     "watch:start": "ROOT=`pwd` && NODE_ENV=development NODE_CONFIG_DIR=$ROOT/lib/config nodemon --delay 2.5 --watch lib lib/rest/index.js"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.64",
-    "lodash": "^4.17.4",
+    "@types/lodash": "4.14.68",
+    "lodash": "4.17.4",
     "log4js": "^1.1.1",
     "rxjs": "^5.4.0",
     "uuid": "^3.0.1"

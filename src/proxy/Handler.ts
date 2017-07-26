@@ -1,5 +1,5 @@
 import * as Rx from 'rxjs';
-import {isNil} from 'lodash';
+import {isNil, isObject} from 'lodash';
 
 import {ProxyMetaData} from '../meta/ProxyMetaData';
 import {AbstractMethod} from '../meta/AbstractMethod';
@@ -214,6 +214,10 @@ export class Handler<T extends Proxied> implements ProxyHandler<T> {
 
 
   private validateProxyValue(property: string, value: any) {
+    if (!isObject(value)) {
+      return
+    }
+
     const isProxy = Reflect.get(value, 'isProxy');
     if (this._meta.isProxy(property)) {
       if (!isProxy) {

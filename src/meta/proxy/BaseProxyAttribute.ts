@@ -1,10 +1,11 @@
 import {BaseMetaMember} from '../BaseMetaMember';
 import {Invocable, Mutability, ProxyType, Requirement} from '../MetaMember';
 
-export class ProxyAttribute extends BaseMetaMember {
+export abstract class BaseProxyAttribute extends BaseMetaMember {
   constructor(_name: string,
+              _proxyType: ProxyType,
               _isRequired?: Requirement,
               _isMutable?: Mutability) {
-    super(_name, ProxyType.PROXY, Invocable.CANNOT_INVOKE, _isRequired, _isMutable);
+    super(_name, _proxyType, Invocable.CANNOT_INVOKE, _isRequired, _isMutable);
   }
 }

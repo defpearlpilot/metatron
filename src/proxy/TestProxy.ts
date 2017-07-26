@@ -1,9 +1,9 @@
 import {Handler} from './Handler';
-import {Primitive} from '../meta/fields/Primitive';
 import {ProxyMetaData} from '../meta/ProxyMetaData';
-import {Mutability, Requirement} from '../meta/MetaMember';
+import {MetaMember} from '../meta/MetaMember';
 import {AttributeMethod} from '../meta/methods/AttributeMethod';
 import {Proxied} from './Proxied';
+import {MethodBuilder, PrimitiveBuilder} from '../meta/MetaBuilder';
 
 
 export interface Test extends Proxied {
@@ -14,32 +14,20 @@ export interface Test extends Proxied {
   attribute?: string;
 }
 
-class Attribute extends AttributeMethod {
+const proxyFields: MetaMember[] = [
+  new PrimitiveBuilder('required').required().build(),
+  new PrimitiveBuilder('not_required').build(),
+  new PrimitiveBuilder('not_writable').required().immutable().build(),
+  new PrimitiveBuilder('writable').notRequired().mutable().build(),
+  new PrimitiveBuilder('writable_required').required().mutable().build(),
+  new MethodBuilder('attribute').parameter('required')
+                                .parameter('writable')
+                                .calculation(parameters => {
+                                  const requireVal = parameters.get('required');
+                                  const writableVal = parameters.get('writable');
 
-  constructor() {
-    super('attribute');
-  }
-
-  parameterNames(): string[] {
-    return ['required', 'writable'];
-  }
-
-  invoke(parameters: Map<string, any>) {
-    const requireVal = parameters.get('required');
-    const writableVal = parameters.get('writable');
-
-    return requireVal + writableVal;
-  }
-
-}
-
-const proxyFields = [
-  new Primitive('required', Requirement.REQUIRED),
-  new Primitive('not_required'),
-  new Primitive('not_writable', Requirement.REQUIRED, Mutability.IMMUTABLE),
-  new Primitive('writable', Requirement.NOT_REQUIRED, Mutability.MUTABLE),
-  new Primitive('writable_required', Requirement.REQUIRED, Mutability.MUTABLE),
-  new Attribute()
+                                  return requireVal + writableVal;
+                                }).build()
 ];
 
 const testMetaData = new ProxyMetaData(proxyFields);

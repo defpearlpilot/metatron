@@ -4,9 +4,11 @@
   "description": "projects",
   "license": "MIT",
   "repository": "",
-  "author": "",
+  "author": "Andrew Tuliszewski",
   "keywords": [
-    ""
+    "meta programming",
+    "proxy",
+    "javascript"
   ],
   "files": [
     "lib"
@@ -16,7 +18,7 @@
   "scripts": {
     "clean": "rimraf lib",
     "build": "npm run clean && tsc --version && tsc --pretty",
-    "test": "npm run build && ROOT=`pwd` && NODE_ENV=unit-test NODE_CONFIG_DIR=$ROOT/lib/config mocha --compilers ts:ts-node/register --recursive 'test/**/*-spec.ts'",
+    "test": "npm run build && ROOT=`pwd` && NODE_ENV=unit-test NODE_CONFIG_DIR=$ROOT/lib/config mocha --compilers ts:ts-node/register --recursive 'test/**/*.spec.ts'",
     "coverage": "nyc --reporter=text --reporter=html mocha --compilers ts:ts-node/register",
     "watch": "npm run build -- --watch",
     "watch:unit": "npm run test:unit -- --watch",
@@ -24,25 +26,26 @@
     "watch:start": "ROOT=`pwd` && NODE_ENV=development NODE_CONFIG_DIR=$ROOT/lib/config nodemon --delay 2.5 --watch lib lib/rest/index.js"
   },
   "dependencies": {
-    "@types/lodash": "4.14.68",
     "lodash": "4.17.4",
     "log4js": "^1.1.1",
     "rxjs": "^5.4.0",
+    "swagger-parser": "^4.0.2",
     "uuid": "^3.0.1"
   },
   "devDependencies": {
+    "@types/swagger-parser": "^4.0.2",
     "@types/body-parser": "^1.16.3",
-    "@types/chai": "^3.0.0",
-    "@types/chai-as-promised": "0.0.30",
+    "@types/chai": "^4.1.2",
+    "@types/lodash": "4.14.68",
     "@types/log4js": "0.0.32",
-    "@types/mocha": "^2.0.0",
-    "chai": "^3.0.0",
-    "chai-as-promised": "^6.0.0",
-    "mocha": "^3.0.0",
+    "@types/mocha": "^2.2.48",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^3.5.3",
     "rimraf": "^2.0.0",
+    "ts-node": "^4.1.0",
     "tslint": "^4.0.0",
-    "typescript": "^2.3.0",
-    "ts-node": "^2.0.0"
+    "typescript": "^2.7.1"
   },
   "engines": {
     "node": ">=4.0.0"

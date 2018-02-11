@@ -1,7 +1,6 @@
 import {Handler} from './Handler';
 import {ProxyMetaData} from '../meta/ProxyMetaData';
 import {MetaMember} from '../meta/MetaMember';
-import {AttributeMethod} from '../meta/methods/AttributeMethod';
 import {Proxied} from './Proxied';
 import {MethodBuilder, PrimitiveBuilder} from '../meta/MetaBuilder';
 

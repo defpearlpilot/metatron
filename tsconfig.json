@@ -8,6 +8,7 @@
     "outDir": "./lib",
     "preserveConstEnums": true,
     "removeComments": true,
+    "skipLibCheck": true,
     "typeRoots": [
       "./node_modules/@types"
     ]

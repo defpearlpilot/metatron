@@ -12,9 +12,11 @@ class Cache {
 
 const BUILT_INS = [
   new BuiltInMethod("isProxy"),
+  new BuiltInMethod("validate"),
   new BuiltInMethod("commit"),
   new BuiltInMethod("rollback"),
   new BuiltInMethod("update"),
+  new BuiltInMethod("destroy"),
   new BuiltInMethod("subscribe")
 ];
 
@@ -53,7 +55,6 @@ export class ProxyMetaData {
   isProxy(name: string) {
     return this.nameMap.get(name)
   }
-
 
 
   canInvoke(name: string) {

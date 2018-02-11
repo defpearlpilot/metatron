@@ -1,7 +1,5 @@
-import {Named} from '../cache/CachingStrategy';
 import {Invocable, MetaMember, Mutability, ProxyType, Requirement} from './MetaMember';
 import {Primitive} from './fields/Primitive';
-import {BaseProxyAttribute} from './proxy/BaseProxyAttribute';
 import {ProxyAttribute} from './proxy/ProxyAttribute';
 import {ProxyListAttribute} from './proxy/ProxyListAttribute';
 import {AttributeMethod} from './methods/AttributeMethod';

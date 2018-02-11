@@ -9,6 +9,8 @@ export interface Proxied {
 
   destroy(): boolean;
 
+  validate(): boolean;
+
   subscribe(onNext: (update: Notification) => void,
             onError: (error: any) => void,
             onComplete: () => void): Rx.Subscription;

@@ -25,19 +25,19 @@ export class Handler<T extends Proxied> implements ProxyHandler<T> {
 
   constructor(private _meta: ProxyMetaData) {
     this._subject = new Rx.Subject<Notification>();
-
   }
-
-  // construct(target: T, argArray: any, newTarget?: any): object {
-  //   TODO: implement this, maybe
-  //   return {};
-  // }
 
   subscribe(target: T,
             onNext: (update: Notification) => void,
             onError: (error: any) => void,
             onComplete: () => void) : Rx.Subscription {
     return this._subject.subscribe(onNext, onError, onComplete);
+  }
+
+
+  construct(target: T, argArray: any, newTarget?: any): object {
+    console.log('Called constructor');
+    return {};
   }
 
 
@@ -107,9 +107,18 @@ export class Handler<T extends Proxied> implements ProxyHandler<T> {
   }
 
 
+  validate(target: T): boolean {
+    Object.keys(target).forEach(field => {
+      this.checkProperty(field)
+    });
+
+    return true;
+  }
+
   isProxy(target: T) {
     return true;
   }
+
 
   private checkProperty(property: string): void {
     if (!this._meta.containsProperty(property as string)) {
@@ -144,6 +153,10 @@ export class Handler<T extends Proxied> implements ProxyHandler<T> {
 
 
   private setValue(target: T, property: PropertyKey, value: any) {
+    /*
+    This is the fundamental logic of setValue.  The different applications based on seen data
+    use this below.
+     */
     const _setValue = (provideCurrent: () => any,
                        provideOriginal: () => any,
                        setOriginal: (original: any) => void,

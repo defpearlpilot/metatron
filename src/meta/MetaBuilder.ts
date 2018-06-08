@@ -3,6 +3,7 @@ import {Primitive} from './fields/Primitive';
 import {ProxyAttribute} from './proxy/ProxyAttribute';
 import {ProxyListAttribute} from './proxy/ProxyListAttribute';
 import {AttributeMethod} from './methods/AttributeMethod';
+import {ProxyMetaData} from "./ProxyMetaData";
 
 
 
@@ -15,15 +16,17 @@ export interface MetaBuilder {
 
   immutable: () => MetaBuilder;
   mutable: () => MetaBuilder;
+
+  build: () => MetaMember;
 }
 
 
 export abstract class AbstractMetaBuilder implements MetaBuilder {
-  protected _required: Requirement;
-  protected _invocable: Invocable;
-  protected _immutable: Mutability;
+  protected _required: Requirement = Requirement.NOT_REQUIRED;
+  protected _canInvoke: Invocable = Invocable.CANNOT_INVOKE;
+  protected _immutable: Mutability = Mutability.IMMUTABLE;
 
-  constructor(protected _name: string) {
+  protected constructor(protected _name: string) {
   }
 
   required() {
@@ -37,12 +40,12 @@ export abstract class AbstractMetaBuilder implements MetaBuilder {
   }
 
   invokable() {
-    this._invocable = Invocable.CAN_INVOKE;
+    this._canInvoke = Invocable.CAN_INVOKE;
     return this;
   };
 
   notInvokable() {
-    this._invocable = Invocable.CANNOT_INVOKE;
+    this._canInvoke = Invocable.CANNOT_INVOKE;
     return this;
   }
 
@@ -73,9 +76,11 @@ export class PrimitiveBuilder extends AbstractMetaBuilder {
 
 export class ProxyBuilder extends AbstractMetaBuilder {
   private _proxyType: ProxyType;
+  private _meta: ProxyMetaData;
 
-  constructor(_name: string) {
+  constructor(_name: string, _meta: ProxyMetaData) {
     super(_name);
+    this._meta = _meta;
   }
 
   scalar(): ProxyBuilder {
@@ -94,10 +99,10 @@ export class ProxyBuilder extends AbstractMetaBuilder {
         throw new Error('Framework error: should not be constructing a proxy that is not a proxy')
       }
       case ProxyType.PROXY: {
-        return new ProxyAttribute(this._name, this._required, this._immutable)
+        return new ProxyAttribute(this._name, this._meta, this._required, this._immutable)
       }
       case ProxyType.PROXY_LIST: {
-        return new ProxyListAttribute(this._name, this._required, this._immutable)
+        return new ProxyListAttribute(this._name, this._meta, this._required, this._immutable)
       }
     }
   }
@@ -142,8 +147,8 @@ export class MetaBuilderFactory {
     return new PrimitiveBuilder(name);
   }
 
-  static proxy(name: string): ProxyBuilder {
-    return new ProxyBuilder(name);
+  static proxy(name: string, meta: ProxyMetaData): ProxyBuilder {
+    return new ProxyBuilder(name, meta);
   }
 
   static method(name: string): MetaBuilder {

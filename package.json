@@ -26,8 +26,13 @@
     "watch:start": "ROOT=`pwd` && NODE_ENV=development NODE_CONFIG_DIR=$ROOT/lib/config nodemon --delay 2.5 --watch lib lib/rest/index.js"
   },
   "dependencies": {
+    "@types/js-yaml": "^3.11.1",
+    "@types/request": "^2.47.0",
+    "fs": "0.0.1-security",
+    "js-yaml": "^3.11.0",
     "lodash": "4.17.4",
     "log4js": "^1.1.1",
+    "request": "^2.87.0",
     "rxjs": "^5.4.0",
     "swagger-parser": "^4.0.2",
     "uuid": "^3.0.1"

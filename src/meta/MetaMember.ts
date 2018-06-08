@@ -1,8 +1,8 @@
 import {Named} from '../cache/CachingStrategy';
 
 export enum Requirement {
-  REQUIRED,
-  NOT_REQUIRED
+  NOT_REQUIRED,
+  REQUIRED
 }
 
 export enum Mutability {
@@ -11,8 +11,8 @@ export enum Mutability {
 }
 
 export enum Invocable {
-  CAN_INVOKE,
-  CANNOT_INVOKE
+  CANNOT_INVOKE,
+  CAN_INVOKE
 }
 
 export enum ProxyType {
@@ -27,4 +27,6 @@ export interface MetaMember extends Named {
   isMutable: boolean;
   isProxy: boolean;
   canInvoke: boolean;
+
+  withName: (name: string) => MetaMember;
 }

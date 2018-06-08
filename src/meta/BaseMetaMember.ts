@@ -2,11 +2,11 @@ import {Invocable, MetaMember, Mutability, ProxyType, Requirement} from './MetaM
 
 export abstract class BaseMetaMember implements MetaMember {
 
-  constructor(private _name: string,
-              private _isProxy: ProxyType = ProxyType.NOT_PROXY,
-              private _canInvoke: Invocable = Invocable.CANNOT_INVOKE,
-              private _isRequired: Requirement = Requirement.NOT_REQUIRED,
-              private _isMutable: Mutability = Mutability.MUTABLE) {
+  protected constructor(protected _name: string,
+                        protected _isProxy: ProxyType = ProxyType.NOT_PROXY,
+                        protected _canInvoke: Invocable = Invocable.CANNOT_INVOKE,
+                        protected _isRequired: Requirement = Requirement.NOT_REQUIRED,
+                        protected _isMutable: Mutability = Mutability.MUTABLE) {
   }
 
   get name() {
@@ -28,4 +28,8 @@ export abstract class BaseMetaMember implements MetaMember {
   get isProxy() {
     return this._isProxy != ProxyType.NOT_PROXY;
   }
+
+  withName(name: string): MetaMember {
+    throw 'Must implement';
+  };
 }
